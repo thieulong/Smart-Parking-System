@@ -5,6 +5,12 @@ print("[INFO] Loading parking lot image ...")
 image = "parking_lot.png"
 img = cv2.imread(image)
 
+file = open("parking_area_cordinates.txt","r+")
+
+file.truncate(0)
+
+file.close()
+
 print("[INFO] Parking lot image loaded successfully!")
     
 print("[INFO] Click and drag to draw parking area. Press SPACE to save after each area")
@@ -17,6 +23,8 @@ a = 0
 b = 0
 c = 0
 d = 0
+
+parking_lot = 0
 
 def draw_reactangle_with_drag(event, x, y, flags, param):
     global ix, iy, drawing, img, a, b, c, d
@@ -57,8 +65,12 @@ while True:
     cv2.setMouseCallback("Parking area", draw_reactangle_with_drag)
     
     if cv2.waitKey(5) == 32:
+
+        parking_lot += 1
         
         print("[INFO] SPACE pressed! New parking area saved.")
+
+        print("[INFO] Number of parking lots: {}".format(parking_lot))
         
         cv2.imwrite("parking_lot.png", img)
         
