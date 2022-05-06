@@ -1,7 +1,7 @@
 from zoneinfo import available_timezones
 import cv2
 
-camera = cv2.VideoCapture(2)
+camera = cv2.VideoCapture(0)
 
 print("[INFO] Initializing camera.")
 
@@ -126,9 +126,13 @@ while True:
 
                         available_parking_lot_cords.append(occupied_parking_lot_cords[i])
 
-                        occupied_parking_lot_cords.remove(occupied_parking_lot_cords[i])
+                        # occupied_parking_lot_cords.remove(occupied_parking_lot_cords[i])
+
+                        occupied_parking_lot_cords[i] = None
 
                         # It got removed so the for loop cannot continue due to missing element
+
+                occupied_parking_lot_cords = [x for x in occupied_parking_lot_cords if x]
 
             available_parking_lot = len(available_parking_lot_cords)
 
