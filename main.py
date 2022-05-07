@@ -1,5 +1,5 @@
-from zoneinfo import available_timezones
 import cv2
+from parking_availability import parking_availability
 
 camera = cv2.VideoCapture(2)
 
@@ -7,11 +7,9 @@ print("[INFO] Initializing camera.")
 
 cv2.namedWindow("Camera")
 
-# Parking lot cordinates
+file = open("parking_area_coordinates.txt")
 
-file = open("parking_area_cordinates.txt")
-
-print("[INFO] Loading parking cordinates ...")
+print("[INFO] Loading parking coordinates ...")
 
 lines = file.readlines()
 
@@ -19,39 +17,29 @@ lines = [line.strip() for line in lines]
 
 total_parking_lots = len(lines)
 
-available_parking_lot = total_parking_lots
-
-parking_lot_cords = list()
-
-available_parking_lot_cords = list()
-
-occupied_parking_lot_cords = list()
+parking_lot_coords = list()
 
 for i in range(len(lines)):
     
-    cords = lines[i].split()
+    coords = lines[i].split()
 
-    left = int(cords[0])
+    left = int(coords[0])
 
-    top = int(cords[1])
+    top = int(coords[1])
     
-    right = int(cords[2])
+    right = int(coords[2])
     
-    bottom = int(cords[3])
+    bottom = int(coords[3])
 
-    cords = [left, top, right, bottom]
+    coords = [left, top, right, bottom]
 
-    parking_lot_cords.append(cords)
-
-    available_parking_lot_cords.append(cords)
-
-# Car recognition
-
-car_cascade = cv2.CascadeClassifier('cars.xml')
+    parking_lot_coords.append(coords)
 
 while True:
 
     ret, frame = camera.read()
+
+    frame = cv2.flip(frame, 1)
 
     if not ret:
         
@@ -61,106 +49,63 @@ while True:
 
     if ret:
 
-        for i in range(len(parking_lot_cords)):
+        for i in range(len(parking_lot_coords)):
+
+            parking_lot = frame[parking_lot_coords[i][1]: parking_lot_coords[i][-1],
+                                parking_lot_coords[i][0]: parking_lot_coords[i][2]]
+
+            cv2.imwrite("parking_lots/{}.png".format(i),
+                        img=parking_lot)
 
             cv2.rectangle(img=frame,
-                        pt1=(parking_lot_cords[i][0], parking_lot_cords[i][1]),
-                        pt2=(parking_lot_cords[i][2], parking_lot_cords[i][-1]),
-                        color=(0,255,0),
-                        thickness=2)
+                          pt1=(parking_lot_coords[i][0], parking_lot_coords[i][1]),
+                          pt2=(parking_lot_coords[i][2], parking_lot_coords[i][-1]),
+                          color=(0,255,0),
+                          thickness=1)
 
-        gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-        car = car_cascade.detectMultiScale(gray,1.1,3)
-        
-        for (x,y,w,h) in car:
-            
-            cv2.rectangle(img=frame,
-                        pt1=(x,y),
-                        pt2=(x+w,y+h),
-                        color=(0,255,0),
-                        thickness=2)
+        parking_lots = parking_availability()
 
-            # cv2.putText(img=frame,
-            #         text="Car",
-            #         org=(x, y + h + 25), 
-            #         fontFace=cv2.FONT_HERSHEY_SIMPLEX, 
-            #         fontScale=1, 
-            #         color=(0, 255, 0),
-            #         thickness=2)
+        available_parking_lot = parking_lots[0]
 
-            car = [x, y, w, h]
+        unavailable_parking_lot = parking_lots[1]
 
-            for i in range(len(parking_lot_cords)):
-        
-                if car[0] >= parking_lot_cords[i][0] and car[0] + car[2] <= parking_lot_cords[i][2] and car[1] >= parking_lot_cords[i][1] and car[1] + car[3] <= parking_lot_cords[i][3]:
-                
-                    cv2.rectangle(img=frame,
-                            pt1=(parking_lot_cords[i][0], parking_lot_cords[i][1]),
-                            pt2=(parking_lot_cords[i][2], parking_lot_cords[i][-1]),
-                            color=(0,0,255),
-                            thickness=2)
+        print("Available:", available_parking_lot)
+        print("Unavailable:", unavailable_parking_lot)
 
-                    if parking_lot_cords[i] in available_parking_lot_cords:
+        if len(unavailable_parking_lot) > 0:
 
-                        occupied_parking_lot_cords.append(parking_lot_cords[i])
+            for i in range(len(unavailable_parking_lot)):
 
-                        available_parking_lot_cords.remove(parking_lot_cords[i])
-
-                # else:
-
-                #     if parking_lot_cords[i] in occupied_parking_lot_cords:
-
-                #         available_parking_lot_cords.append(parking_lot_cords[i])
-
-                #         occupied_parking_lot_cords.remove(parking_lot_cords[i])
-
-        if len(occupied_parking_lot_cords) > 0:
-
-            for i in range(len(occupied_parking_lot_cords)):
-
-                if car[0] >= occupied_parking_lot_cords[i][0] and car[0] + car[2] <= occupied_parking_lot_cords[i][2] and car[1] >= occupied_parking_lot_cords[i][1] and car[1] + car[3] <= occupied_parking_lot_cords[i][3]:
-
-                    continue
-
-                else:
-
-                    available_parking_lot_cords.append(occupied_parking_lot_cords[i])
-
-                    # occupied_parking_lot_cords.remove(occupied_parking_lot_cords[i])
-
-                    occupied_parking_lot_cords[i] = None
-
-            # print(len(occupied_parking_lot_cords))
-
-            # available_parking_lot = total_parking_lots - len(occupied_parking_lot_cords)
-
-            occupied_parking_lot_cords = [x for x in occupied_parking_lot_cords if x]
-
-            print(occupied_parking_lot_cords)
-
-            # available_parking_lot = total_parking_lots - len(occupied_parking_lot_cords)
-
-            available_parking_lot = len(available_parking_lot_cords)
-
-            # print(len(occupied_parking_lot_cords))
-
-            # print(available_parking_lot)
+                cv2.rectangle(img=frame,
+                              pt1=(unavailable_parking_lot[i][0], unavailable_parking_lot[i][1]),
+                              pt2=(unavailable_parking_lot[i][2], unavailable_parking_lot[i][-1]),
+                              color=(0,0,255),
+                              thickness=1)
 
         cv2.putText(img=frame,
                     text="Total parking lots: {}".format(total_parking_lots),
-                    org=(10,20),
+                    org=(10,440),
                     fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                    fontScale=0.8,
+                    fontScale=0.5,
                     color=(0, 255, 0),
-                    thickness=2)
+                    thickness=1)
 
         cv2.putText(img=frame,
-                    text="Available parking lots: {}".format(available_parking_lot),
-                    org=(10,50),
+                    text="Available parking lots: {}".format(len(available_parking_lot)),
+                    org=(10,460),
                     fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                    fontScale=0.8,
+                    fontScale=0.5,
                     color=(0, 255, 0),
-                    thickness=2)
+                    thickness=1)
+
+        
+        width = 1800
+
+        height = 1080
+        
+        dim = (width, height)
+
+        frame = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
 
         cv2.imshow("Camera", frame)
 

@@ -1,8 +1,8 @@
-import cv2 as cv
-import numpy as np
+import cv2
 
-camera = cv.VideoCapture(2)
-car_cascade = cv.CascadeClassifier('cars.xml')
+camera = cv2.VideoCapture(2)
+
+car_cascade = cv2.CascadeClassifier('cars.xml')
 
 while True:
     
@@ -10,30 +10,34 @@ while True:
 
     if ret:
         
-        gray = cv.cvtColor(frame,cv.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+
         car = car_cascade.detectMultiScale(gray,1.1,5)
         
         for (x,y,w,h) in car:
             
-            cv.rectangle(img=frame,
+            cv2.rectangle(img=frame,
                          pt1=(x,y),
                          pt2=(x+w,y+h),
                          color=(0,255,0),
                          thickness=2)
 
-            cv.putText(img=frame,
+            cv2.putText(img=frame,
                        text="Car",
                        org=(x, y + h + 25), 
-                       fontFace=cv.FONT_HERSHEY_SIMPLEX, 
+                       fontFace=cv2.FONT_HERSHEY_SIMPLEX, 
                        fontScale=1, 
                        color=(0, 255, 0),
                        thickness=2)
 
-    cv.namedWindow("Car detect")
-    cv.imshow("Car detect", frame)
+    cv2.namedWindow("Car detect")
+
+    cv2.imshow("Car detect", frame)
     
-    if cv.waitKey(1) & 0xFF == 27:
+    if cv2.waitKey(1) & 0xFF == 27:
+
         break
 
 camera.release()
-cv.destroyAllWindows()
+
+cv2.destroyAllWindows()
