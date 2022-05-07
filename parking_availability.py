@@ -3,8 +3,6 @@ from parking_lot_status import parking_lot_status
 
 parking_lot_image = sorted(glob.glob("parking_lots/*.png"))
 
-print(parking_lot_image)
-
 file = open("parking_area_coordinates.txt")
 
 lines = file.readlines()

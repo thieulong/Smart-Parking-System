@@ -39,8 +39,6 @@ while True:
 
     ret, frame = camera.read()
 
-    frame = cv2.flip(frame, 1)
-
     if not ret:
         
         print("[ERROR] Failed to initialize camera.")
@@ -98,7 +96,6 @@ while True:
                     color=(0, 255, 0),
                     thickness=1)
 
-        
         width = 1800
 
         height = 1080

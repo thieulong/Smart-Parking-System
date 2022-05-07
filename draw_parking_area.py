@@ -3,9 +3,10 @@ import cv2
 print("[INFO] Loading parking lot image ...")
 
 image = "parking_lot.png"
+
 img = cv2.imread(image)
 
-file = open("parking_area_cordinates.txt","r+")
+file = open("parking_area_coordinates.txt","r+")
 
 file.truncate(0)
 
@@ -74,7 +75,7 @@ while True:
         
         cv2.imwrite("parking_lot.png", img)
         
-        with open('parking_area_cordinates.txt', 'a') as file:
+        with open('parking_area_coordinates.txt', 'a') as file:
             
             file.write("{} {} {} {}\n". format(a, b, c, d))
         
