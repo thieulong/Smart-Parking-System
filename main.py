@@ -1,7 +1,7 @@
 from zoneinfo import available_timezones
 import cv2
 
-camera = cv2.VideoCapture(0)
+camera = cv2.VideoCapture(2)
 
 print("[INFO] Initializing camera.")
 
@@ -70,7 +70,7 @@ while True:
                         thickness=2)
 
         gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-        car = car_cascade.detectMultiScale(gray,1.1,1)
+        car = car_cascade.detectMultiScale(gray,1.1,3)
         
         for (x,y,w,h) in car:
             
@@ -114,28 +114,37 @@ while True:
 
                 #         occupied_parking_lot_cords.remove(parking_lot_cords[i])
 
-            if len(occupied_parking_lot_cords) > 0:
+        if len(occupied_parking_lot_cords) > 0:
 
-                for i in range(len(occupied_parking_lot_cords)):
+            for i in range(len(occupied_parking_lot_cords)):
 
-                    if car[0] >= occupied_parking_lot_cords[i][0] and car[0] + car[2] <= occupied_parking_lot_cords[i][2] and car[1] >= occupied_parking_lot_cords[i][1] and car[1] + car[3] <= occupied_parking_lot_cords[i][3]:
+                if car[0] >= occupied_parking_lot_cords[i][0] and car[0] + car[2] <= occupied_parking_lot_cords[i][2] and car[1] >= occupied_parking_lot_cords[i][1] and car[1] + car[3] <= occupied_parking_lot_cords[i][3]:
 
-                        continue
+                    continue
 
-                    else:
+                else:
 
-                        available_parking_lot_cords.append(occupied_parking_lot_cords[i])
+                    available_parking_lot_cords.append(occupied_parking_lot_cords[i])
 
-                        # occupied_parking_lot_cords.remove(occupied_parking_lot_cords[i])
+                    # occupied_parking_lot_cords.remove(occupied_parking_lot_cords[i])
 
-                        occupied_parking_lot_cords[i] = None
+                    occupied_parking_lot_cords[i] = None
 
-                        # It got removed so the for loop cannot continue due to missing element
+            # print(len(occupied_parking_lot_cords))
 
-                occupied_parking_lot_cords = [x for x in occupied_parking_lot_cords if x]
+            # available_parking_lot = total_parking_lots - len(occupied_parking_lot_cords)
+
+            occupied_parking_lot_cords = [x for x in occupied_parking_lot_cords if x]
+
+            print(occupied_parking_lot_cords)
+
+            # available_parking_lot = total_parking_lots - len(occupied_parking_lot_cords)
 
             available_parking_lot = len(available_parking_lot_cords)
 
+            # print(len(occupied_parking_lot_cords))
+
+            # print(available_parking_lot)
 
         cv2.putText(img=frame,
                     text="Total parking lots: {}".format(total_parking_lots),
