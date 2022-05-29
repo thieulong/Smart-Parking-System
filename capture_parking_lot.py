@@ -37,7 +37,7 @@ while True:
         print("[INFO] Saving '{}' ...".format(img_name))
         
         cv2.imwrite(img_name, frame)
-        
+
         print("[INFO] '{}' saved successfully!".format(img_name))
 
         camera.release()
