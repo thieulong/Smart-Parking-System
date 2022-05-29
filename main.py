@@ -95,7 +95,7 @@ while True:
 
             print("[ERROR] No parking area found, please capture new parking area.")
 
-camera = cv2.VideoCapture(0)
+camera = cv2.VideoCapture(2)
 
 print("[INFO] Initializing camera.")
 
@@ -217,7 +217,7 @@ while True:
 
         cv2.putText(img=frame,
                     text="Total parking lots: {}".format(total_parking_lots),
-                    org=(10,440),
+                    org=(10,430),
                     fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                     fontScale=0.5,
                     color=(0, 255, 0),
@@ -225,7 +225,7 @@ while True:
 
         cv2.putText(img=frame,
                     text="Available parking lots: {}".format(len(available_parking_lot)),
-                    org=(10,460),
+                    org=(10,450),
                     fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                     fontScale=0.5,
                     color=(0, 255, 0),
@@ -233,7 +233,7 @@ while True:
 
         cv2.putText(img=frame,
                     text="Closest parking lot: {}".format(closest_parking_label),
-                    org=(440,460),
+                    org=(10,470),
                     fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                     fontScale=0.5,
                     color=(0, 255, 0),
